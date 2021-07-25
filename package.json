@@ -1,0 +1,28 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "tracks employees through tables",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jczarfeld/Employee-Tracker.git"
+  },
+  "keywords": [
+    "employee",
+    "tracker",
+    "table"
+  ],
+  "author": "john osterfeld",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jczarfeld/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/jczarfeld/Employee-Tracker#readme",
+  "dependencies": {
+    "inquirer": "^8.1.2",
+    "mysql2": "^2.2.5"
+  }
+}
