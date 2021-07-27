@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 // const db = require("./db/dbQueries");
 const connection = require("./db/connection");
+const cTable = require("console.table");
 
 
 connection.connect((error) => {
@@ -61,33 +62,33 @@ if (choices === "Exit") {
 
 const viewDepartments = () => {
   const sql = `SELECT department.id AS id, department.department_name AS department FROM department`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     console.table(response);
-    promptUser();
+    // promptUser();
   });
 };
 
 const viewRoles = () => {
 
   const sql = `SELECT role.id, role.title, department.department_name AS department FROM role INNER JOIN department ON role.department_id = department.id`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     response.forEach((role) => {
       console.log(role.title);
     });
-  promptUser();
+  // promptUser();
   });
 };
 
 const viewEmployees = () => {
-  let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;`;
-  connection.promise().query(sql, (error, response) => {
+  let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;`;
+  connection.query(sql, (error, response) => {
     if (error) throw error;
 
     console.table(response);
 
-    promptUser();
+    // promptUser();
   });
 };
 
@@ -97,7 +98,7 @@ const addDepartment = () => {
       name: 'newDepartment',
       type: 'input',
       message: 'Whats the name of the Department?',
-      validate: validate.validateString
+      
     }])
     .then((answer) => {
       let sql = `INSERT INTO department (department_name) VALUES (?)`;
@@ -111,7 +112,7 @@ const addDepartment = () => {
 
 const addRole = () => {
   const sql = 'SELECT * FROM department'
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let departmentsArray = [];
     response.forEach((department) => {
@@ -140,13 +141,13 @@ const addRole = () => {
             name: 'salary',
             type: 'input',
             message: 'Whats the salary?',
-            validate: validate.validateSalary
+            
           },
           {
             name: 'newRole',
             type: 'input',
             message: 'Whats the name of your new role?',
-            validate: validate.validateString
+            
           }
        
         ])
@@ -163,7 +164,7 @@ const addRole = () => {
           let sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
           let crit = [createdRole, answer.salary, departmentId];
 
-          connection.promise().query(sql, crit, (error) => {
+          connection.query(sql, crit, (error) => {
             if (error) throw error;
             
             viewRoles();
@@ -178,33 +179,19 @@ const addEmployee = () => {
         type: 'input',
         name: 'fistName',
         message: "What is their first name?",
-        validate: addFirstName => {
-          if (addFirstName) {
-            return true;
-          } else {
-            console.log('Please enter first name');
-            return false;
-          }
-        }
+        
       },
       {
         type: 'input',
         name: 'lastName',
         message: "What is theirs last name?",
-        validate: addLastName => {
-          if (addLastName) {
-            return true;
-          } else {
-            console.log('Please enter last name');
-            return false;
-          }
-        }
+        
       }
     ])
     .then(answer => {
       const crit = [answer.fistName, answer.lastName]
       const roleSql = `SELECT role.id, role.title FROM role`;
-      connection.promise().query(roleSql, (error, data) => {
+      connection.query(roleSql, (error, data) => {
         if (error) throw error;
         const roles = data.map(({
           id,
@@ -223,7 +210,7 @@ const addEmployee = () => {
             const role = roleChoice.role;
             crit.push(role);
             const managerSql = `SELECT * FROM employee`;
-            connection.promise().query(managerSql, (error, data) => {
+            connection.query(managerSql, (error, data) => {
               if (error) throw error;
               const managers = data.map(({
                 id,
@@ -258,7 +245,7 @@ const addEmployee = () => {
 
 const updateRole = () => {
   let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.id AS "role_id" FROM employee, role, department WHERE department.id = role.department_id AND role.id = employee.role_id`;
-  connection.promise().query(sql, (error, response) => {
+  connection.query(sql, (error, response) => {
     if (error) throw error;
     let employeeArray = [];
     response.forEach((employee) => {
@@ -266,7 +253,7 @@ const updateRole = () => {
     });
 
     let sql = `SELECT role.id, role.title FROM role`;
-    connection.promise().query(sql, (error, response) => {
+    connection.query(sql, (error, response) => {
       if (error) throw error;
       let rolesArray = [];
       response.forEach((role) => {
@@ -308,7 +295,7 @@ const updateRole = () => {
           let sqls = `UPDATE employee SET employee.role_id = ? WHERE employee.id = ?`;
           connection.query(
             sqls,
-            [newTitleId, employeeId],
+            [newJobId, employeeId],
             (error) => {
               if (error) throw error;
               
@@ -322,3 +309,4 @@ const updateRole = () => {
 
 
 
+// promptUser();
